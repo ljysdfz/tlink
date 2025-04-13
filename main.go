@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	trunks "github.com/shynuu/trunks/runtime"
+	// trunks "github.com/shynuu/trunks/runtime"
 	"github.com/urfave/cli/v2"
 )
 
@@ -28,12 +28,12 @@ func main() {
 	var logs string
 
 	app := &cli.App{
-		Name:                 "trunks",
-		Usage:                "a simple DVB-S2/DVB-RCS2 simulator",
+		Name:                 "tlink",
+		Usage:                "a telecommunication link simulator",
 		EnableBashCompletion: true,
-		Authors: []*cli.Author{
-			{Name: "Youssouf Drif"},
-		},
+		// Authors: []*cli.Author{
+		// 	{Name: "Robin Rhee"},
+		// },
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "config",
@@ -54,24 +54,24 @@ func main() {
 				Usage:       "Flush IPTABLES table mangle and clear all TC rules",
 				Destination: &flush,
 			},
-			&cli.BoolFlag{
-				Name:        "acm",
-				Usage:       "Activate the ACM simulation",
-				Destination: &acm,
-				DefaultText: "not activated",
-			},
-			&cli.BoolFlag{
-				Name:        "qos",
-				Usage:       "Process traffic using QoS",
-				Destination: &qos,
-				DefaultText: "not activated",
-			},
-			&cli.BoolFlag{
-				Name:        "disable-kernel-version-check",
-				Usage:       "Disable check for bugged kernel versions",
-				Destination: &disable_kernel_version_check,
-				DefaultText: "kernel version check enabled",
-			},
+			// &cli.BoolFlag{
+			// 	Name:        "acm",
+			// 	Usage:       "Activate the ACM simulation",
+			// 	Destination: &acm,
+			// 	DefaultText: "not activated",
+			// },
+			// &cli.BoolFlag{
+			// 	Name:        "qos",
+			// 	Usage:       "Process traffic using QoS",
+			// 	Destination: &qos,
+			// 	DefaultText: "not activated",
+			// },
+			// &cli.BoolFlag{
+			// 	Name:        "disable-kernel-version-check",
+			// 	Usage:       "Disable check for bugged kernel versions",
+			// 	Destination: &disable_kernel_version_check,
+			// 	DefaultText: "kernel version check enabled",
+			// },
 		},
 		Action: func(c *cli.Context) error {
 			trunksConfig, err := trunks.InitTrunks(config, qos, logs, acm, disable_kernel_version_check)
