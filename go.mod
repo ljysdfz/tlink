@@ -1,4 +1,4 @@
-module github.com/shynuu/trunks
+module github.com/ljysdfz/tlink
 
 go 1.22
 

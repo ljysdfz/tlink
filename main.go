@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	trunks "./runtime"
+	trunks "github.com/ljysdfz/tlink/runtime"
 	"github.com/urfave/cli/v2"
 )
 
