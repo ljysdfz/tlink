@@ -1,13 +1,13 @@
 version: '3.9'
 
 services:
-  trunks_leo:
+  satellite:
     tty: true
-    container_name: trunks_leo
-    image: trunks
-    command: --config trunks.yaml
+    container_name: satellite
+    image: tlink
+    command: --config tlink.yaml
     volumes:
-      - ./trunks.yaml:/trunks/trunks.yaml
+      - ./tlink.yaml:/tlink/tlink.yaml
     cap_add:
       - NET_ADMIN
     networks:
