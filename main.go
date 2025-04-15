@@ -31,9 +31,9 @@ func main() {
 		Name:                 "tlink",
 		Usage:                "a telecommunication link simulator",
 		EnableBashCompletion: true,
-		// Authors: []*cli.Author{
-		// 	{Name: "Robin Rhee"},
-		// },
+		Authors: []*cli.Author{
+			{Name: "CTRI CyberRange Team"},
+		},
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "config",
