@@ -95,7 +95,7 @@ nic:
 
 ### Bandwidth
 
-You can set the bandwidth (in Mbit/s) for the forward and return link. Minimum required is 2 Mbit/s for the forward and return link.
+You can set the bandwidth (in Kbit/s) for the forward and return link. Minimum required is 2 Mbit/s for the forward and return link.
 
 ```yaml
 bandwidth:

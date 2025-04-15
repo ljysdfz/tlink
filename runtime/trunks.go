@@ -92,8 +92,8 @@ func (t *TrunksConfig) Run() {
 	if !t.QoS {
 		log.Println("Running without QoS")
 
-		forward := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Forward)))
-		retun := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Return)))
+		forward := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Forward)))
+		retun := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return)))
 		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Value/2)))
 		offset := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Offset/2)))
 		jitter := t.Delay.Offset > 1 && !t.isKernelVersionBugged()
@@ -129,12 +129,12 @@ func (t *TrunksConfig) Run() {
 
 		log.Println("Running with QoS")
 
-		forward := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Forward)))
-		forwardVoIP := fmt.Sprintf("%dmbit", 2)
-		forwardRest := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Forward))-1)
-		retun := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Return)))
-		returnVoIP := fmt.Sprintf("%dmbit", 2)
-		returnRest := fmt.Sprintf("%dmbit", int64(math.Round(t.Bandwidth.Return))-1)
+		forward := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Forward)))
+		forwardVoIP := fmt.Sprintf("%dkbit", 2)
+		forwardRest := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Forward))-1)
+		retun := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return)))
+		returnVoIP := fmt.Sprintf("%dkbit", 2)
+		returnRest := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return))-1)
 		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Value/2)))
 		offset := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Offset/2)))
 		jitter := t.Delay.Offset > 1 && !t.isKernelVersionBugged()
