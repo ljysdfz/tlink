@@ -1,5 +1,4 @@
-// Package trunks define the trunk runtime
-package trunks
+package tlink
 
 import (
 	"fmt"

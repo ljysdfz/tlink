@@ -7,7 +7,7 @@ import (
 	"os/signal"
 	"syscall"
 
-	trunks "github.com/ljysdfz/tlink/runtime"
+	tlink "github.com/ljysdfz/tlink/runtime"
 	"github.com/urfave/cli/v2"
 )
 
@@ -74,7 +74,7 @@ func main() {
 			// },
 		},
 		Action: func(c *cli.Context) error {
-			trunksConfig, err := trunks.InitTrunks(config, qos, logs, acm, disable_kernel_version_check)
+			trunksConfig, err := tlink.InitTrunks(config, qos, logs, acm, disable_kernel_version_check)
 			if err != nil {
 				fmt.Println("Init error, exiting...")
 				os.Exit(1)
