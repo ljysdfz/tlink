@@ -21,25 +21,25 @@ func ParseConf(file string) (*TrunksConfig, error) {
 	return trunksConfig, nil
 }
 
-// Interfaces struct
+// Interfaces struct (interface name or IP address)
 type NIC struct {
 	ST string `yaml:"st"`
 	GW string `yaml:"gw"`
 }
 
-// Bandwidth struct
+// Bandwidth struct (kbps)
 type Bandwidth struct {
 	Forward float64 `yaml:"forward"`
 	Return  float64 `yaml:"return"`
 }
 
-// Delay struct
+// Delay struct (ms)
 type Delay struct {
-	Value  float64 `yaml:"value"`
-	Offset float64 `yaml:"offset"`
+	Denomination  float64 `yaml:"denomination"`
+	Jitter float64 `yaml:"jitter"`
 }
 
-// ACM struct
+// ACM struct (Duration: times)
 type ACM struct {
 	Weight   float64 `yaml:"weight"`
 	Duration int     `yaml:"duration"`

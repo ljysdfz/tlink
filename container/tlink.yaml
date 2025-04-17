@@ -10,8 +10,8 @@ bandwidth:
 
 # configure the delay according to the GEO, MEO or LEO satellite and the offset, real delay = delay + or - offset
 delay:
-  value: 40
-  offset: 10
+  denomination: 40
+  jitter: 10
 
 # set the ACM simulation values
 acm:

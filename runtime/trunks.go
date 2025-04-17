@@ -78,7 +78,7 @@ func (t *TrunksConfig) isKernelVersionBugged() bool {
 	}
 	// See https://gist.github.com/louisroyer/90636c07dc4b205b813a56de718d9d09
 	if strings.Contains(string(out), "Debian 6.1.38-") {
-		log.Println("Warning: offset delay will be disabled because you are using Debian with Linux 6.1.38 which is known to crash with this settting. See https://github.com/shynuu/trunks/issues/6 for details.")
+		log.Println("Warning: jitter will be disabled because you are using Debian with Linux 6.1.38 which is known to crash with this settting. See https://github.com/shynuu/trunks/issues/6 for details.")
 		return true
 	}
 	return false
@@ -94,13 +94,13 @@ func (t *TrunksConfig) Run() {
 
 		forward := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Forward)))
 		retun := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return)))
-		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Value/2)))
-		offset := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Offset/2)))
-		jitter := t.Delay.Offset > 1 && !t.isKernelVersionBugged()
+		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Denomination/2)))
+		jitter := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Jitter/2)))
+		hasJitter := t.Delay.Jitter > 1 && !t.isKernelVersionBugged()
 
 		// qlen formula: 1.5 * bandwidth[bits/s] * latency[s] / mtu[bits]
-		qlenForward := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Forward*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
-		qlenReturn := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
+		qlenForward := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Forward*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
+		qlenReturn := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
 
 		log.Println("Configure IPTABLES")
 		runIPtables("-t", "mangle", "-A", "PREROUTING", "-i", t.NIC.ST, "-j", "MARK", "--set-mark", "10")
@@ -109,8 +109,8 @@ func (t *TrunksConfig) Run() {
 		log.Println("Configure TC")
 		runTC("qdisc", "add", "dev", t.NIC.GW, "root", "handle", "1:0", "htb", "default", "30")
 		runTC("class", "add", "dev", t.NIC.GW, "parent", "1:0", "classid", "1:1", "htb", "rate", retun, "burst", "30k", "cburst", "30k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenReturn)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenReturn)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, "limit", qlenReturn)
 		}
@@ -118,8 +118,8 @@ func (t *TrunksConfig) Run() {
 
 		runTC("qdisc", "add", "dev", t.NIC.ST, "root", "handle", "1:0", "htb", "default", "30")
 		runTC("class", "add", "dev", t.NIC.ST, "parent", "1:0", "classid", "1:1", "htb", "rate", forward, "burst", "30k", "cburst", "30k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenForward)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenForward)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:1", "handle", "2:0", "netem", "delay", delay, "limit", qlenForward)
 		}
@@ -135,15 +135,15 @@ func (t *TrunksConfig) Run() {
 		retun := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return)))
 		returnVoIP := fmt.Sprintf("%dkbit", 2)
 		returnRest := fmt.Sprintf("%dkbit", int64(math.Round(t.Bandwidth.Return))-1)
-		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Value/2)))
-		offset := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Offset/2)))
-		jitter := t.Delay.Offset > 1 && !t.isKernelVersionBugged()
+		delay := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Denomination/2)))
+		jitter := fmt.Sprintf("%dms", int64(math.Round(t.Delay.Jitter/2)))
+		hasJitter := t.Delay.Jitter > 1 && !t.isKernelVersionBugged()
 
 		// qlen formula: 1.5 * bandwidth[bits/s] * latency[s] / mtu[bits]
-		qlenForwardVoIP := fmt.Sprintf("%d", int64(math.Round(1.5*(2*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
-		qlenForwardRest := fmt.Sprintf("%d", int64(math.Round(1.5*((t.Bandwidth.Forward-1)*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
-		qlenReturnVoIP := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
-		qlenReturnRest := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Value/(2*1000))/(8*1500))))
+		qlenForwardVoIP := fmt.Sprintf("%d", int64(math.Round(1.5*(2*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
+		qlenForwardRest := fmt.Sprintf("%d", int64(math.Round(1.5*((t.Bandwidth.Forward-1)*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
+		qlenReturnVoIP := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
+		qlenReturnRest := fmt.Sprintf("%d", int64(math.Round(1.5*(t.Bandwidth.Return*1000000)*(t.Delay.Denomination/(2*1000))/(8*1500))))
 
 		log.Println("Configure IPTABLES")
 		runIPtables("-t", "mangle", "-A", "PREROUTING", "-i", t.NIC.ST, "-j", "MARK", "--set-mark", "10")
@@ -160,14 +160,14 @@ func (t *TrunksConfig) Run() {
 		runTC("qdisc", "add", "dev", t.NIC.GW, "root", "handle", "1:0", "htb", "default", "20")
 		runTC("class", "add", "dev", t.NIC.GW, "parent", "1:0", "classid", "1:1", "htb", "rate", retun, "burst", "30k", "cburst", "30k")
 		runTC("class", "add", "dev", t.NIC.GW, "parent", "1:1", "classid", "1:10", "htb", "rate", returnVoIP, "prio", "0", "burst", "3k", "cburst", "3k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:10", "handle", "110:", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenReturnVoIP)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:10", "handle", "110:", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenReturnVoIP)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:10", "handle", "110:", "netem", "delay", delay, "limit", qlenReturnVoIP)
 		}
 		runTC("class", "add", "dev", t.NIC.GW, "parent", "1:1", "classid", "1:20", "htb", "rate", returnRest, "prio", "1", "burst", "30k", "cburst", "30k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:20", "handle", "120:", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenReturnRest)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:20", "handle", "120:", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenReturnRest)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.GW, "parent", "1:20", "handle", "120:", "netem", "delay", delay, "limit", qlenReturnRest)
 		}
@@ -179,14 +179,14 @@ func (t *TrunksConfig) Run() {
 		runTC("qdisc", "add", "dev", t.NIC.ST, "root", "handle", "1:0", "htb", "default", "20")
 		runTC("class", "add", "dev", t.NIC.ST, "parent", "1:0", "classid", "1:1", "htb", "rate", forward, "burst", "30k", "cburst", "30k")
 		runTC("class", "add", "dev", t.NIC.ST, "parent", "1:0", "classid", "1:10", "htb", "rate", forwardVoIP, "prio", "0", "burst", "3k", "cburst", "3k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:10", "handle", "110:", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenForwardVoIP)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:10", "handle", "110:", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenForwardVoIP)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:10", "handle", "110:", "netem", "delay", delay, "limit", qlenForwardVoIP)
 		}
 		runTC("class", "add", "dev", t.NIC.ST, "parent", "1:0", "classid", "1:20", "htb", "rate", forwardRest, "prio", "1", "burst", "30k", "cburst", "30k")
-		if jitter {
-			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:20", "handle", "120:", "netem", "delay", delay, offset, "distribution", "normal", "limit", qlenForwardRest)
+		if hasJitter {
+			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:20", "handle", "120:", "netem", "delay", delay, jitter, "distribution", "normal", "limit", qlenForwardRest)
 		} else {
 			runTC("qdisc", "add", "dev", t.NIC.ST, "parent", "1:20", "handle", "120:", "netem", "delay", "limit", qlenForwardRest)
 		}
