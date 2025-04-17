@@ -9,6 +9,7 @@ services:
     command: --config tlink.yaml --logs /tlink/tlink.log
     volumes:
       - ./tlink.yaml:/tlink/tlink.yaml
+    privileged: true
     cap_add:
       - NET_ADMIN
     networks:
