@@ -9,6 +9,4 @@ RUN ./configure
 RUN make
 RUN make install
 
-WORKDIR /app
-COPY ./client.sh client.sh
-COPY ./server.sh server.sh
+WORKDIR /root
