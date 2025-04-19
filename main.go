@@ -42,18 +42,18 @@ func main() {
 				Required:    true,
 				DefaultText: "not set",
 			},
-			&cli.StringFlag{
-				Name:        "logs",
-				Usage:       "Log path for the log file",
-				Destination: &logs,
-				Required:    false,
-				DefaultText: "not set",
-			},
 			&cli.BoolFlag{
 				Name:        "flush",
 				Usage:       "Flush IPTABLES table mangle and clear all TC rules",
 				Destination: &flush,
 			},
+			// &cli.StringFlag{
+			// 	Name:        "logs",
+			// 	Usage:       "Log path for the log file",
+			// 	Destination: &logs,
+			// 	Required:    false,
+			// 	DefaultText: "not set",
+			// },
 			// &cli.BoolFlag{
 			// 	Name:        "acm",
 			// 	Usage:       "Activate the ACM simulation",
