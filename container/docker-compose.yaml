@@ -1,12 +1,10 @@
-version: '3.9'
 
 services:
   satellite:
+    container_name: satellite
+    image: ctri-tlink
     tty: true
     stdin_open: true
-    container_name: satellite
-    image: tlink
-    command: --config tlink.yaml --logs /tlink/tlink.log
     volumes:
       - ./tlink.yaml:/tlink/tlink.yaml
     cap_add:
@@ -16,30 +14,34 @@ services:
         ipv4_address: 10.1.1.254
       gw:
         ipv4_address: 10.2.2.254
+    command: 
+      bash -c "tlink --config tlink.yaml"
 
   client:
     tty: true
     stdin_open: true
     container_name: client
-    image: testbed
+    image: ctri-testbed
     cap_add:
       - NET_ADMIN
     networks:
       st:
         ipv4_address: 10.1.1.2
-    command: bash -c "ip route add 10.2.2.0/24 via 10.1.1.254 && bash"
+    command: 
+      bash -c "ip route add 10.2.2.0/24 via 10.1.1.254 && bash"
 
   server:
     tty: true
     stdin_open: true
     container_name: server
-    image: testbed
+    image: ctri-testbed
     cap_add:
       - NET_ADMIN
     networks:
       gw:
         ipv4_address: 10.2.2.2
-    command: bash -c "ip route add 10.1.1.0/24 via 10.2.2.254 && bash"
+    command: 
+      bash -c "ip route add 10.1.1.0/24 via 10.2.2.254 && bash"
 
 networks:
   st:

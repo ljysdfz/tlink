@@ -3,17 +3,17 @@ nic:
   st: 10.1.1.254
   gw: 10.2.2.254
 
-# configure the forward and return links available bandwidth in Mbits/s
+# configure the forward and return links available bandwidth (kb/s) 
 bandwidth:
   forward: 40
   return: 20
 
-# configure the delay according to the GEO, MEO or LEO satellite and the offset, real delay = delay + or - offset
+# configure the delay (ms) according to the GEO, MEO or LEO satellite and the offset, real delay = delay + or - offset
 delay:
   denomination: 40
   jitter: 10
 
-# set the ACM simulation values
+# set the ACM simulation values (duration unit: time)
 acm:
   - weight: 1
     duration: 10

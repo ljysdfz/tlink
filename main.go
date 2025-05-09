@@ -37,6 +37,7 @@ func main() {
 		Flags: []cli.Flag{
 			&cli.StringFlag{
 				Name:        "config",
+				Aliases: []string{"c"},
 				Usage:       "Load configuration from `FILE`",
 				Destination: &config,
 				Required:    true,
@@ -44,6 +45,7 @@ func main() {
 			},
 			&cli.BoolFlag{
 				Name:        "flush",
+				Aliases: []string{"f"},
 				Usage:       "Flush IPTABLES table mangle and clear all TC rules",
 				Destination: &flush,
 			},

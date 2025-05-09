@@ -1,4 +1,3 @@
-FROM tlink_builder
+FROM ctri-tlink:provenance
 COPY tlink /usr/local/sbin/tlink
-ENTRYPOINT [ "tlink" ]
-CMD [ "--help" ]
+CMD [ "tlink", "--help" ]
