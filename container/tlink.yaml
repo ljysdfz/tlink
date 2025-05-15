@@ -1,12 +1,12 @@
 # set the network device for satellite terminal and gateway.
 nic:
-  st: 10.1.1.254
-  gw: 10.2.2.254
+  st: 192.168.4.1
+  gw: 192.168.3.2
 
 # configure the forward and return links available bandwidth (kb/s) 
 bandwidth:
-  forward: 40
-  return: 20
+  forward: 128
+  return: 128
 
 # configure the delay (ms) according to the GEO, MEO or LEO satellite and the offset, real delay = delay + or - offset
 delay:
