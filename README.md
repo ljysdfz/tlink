@@ -3,4 +3,4 @@
 `go build -o container/tlink -x main.go`
 
 # Execute the app
-`./tlink --config tlink.yaml`
+`./tlink -c tlink.yaml`
